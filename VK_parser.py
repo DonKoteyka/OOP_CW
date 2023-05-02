@@ -2,7 +2,6 @@ import requests
 import json
 import os.path
 import time
-# import pandas as pd
 from pprint import pprint
 
 class Vk_pars:

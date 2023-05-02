@@ -1,6 +1,5 @@
 from ya_api import *
 from VK_parser import *
-import time
 from progress.bar import Bar
 bar = Bar('Countdown', max = 100)
 
