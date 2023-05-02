@@ -30,3 +30,23 @@ class YandexDisk:
         response.raise_for_status()
         if response.status_code == 201:
             print("Success")
+    def upload_link_to_disk(self, file_name, link):
+        upload_url = "https://cloud-api.yandex.net/v1/disk/resources/upload"
+        headers = self.get_headers()
+        params = {
+            'path':file_name,
+            'url':link
+        }
+        response = requests.post(url = upload_url,headers = headers, params = params)
+        if response.status_code == 200:
+            print("Success")
+
+if __name__ == '__main__':
+    with open('private/token.txt', 'rt', encoding='utf-8') as f:
+        ya_token = f.readline().strip('\n')
+        vk_token = f.readline().strip('\n')
+    ya = YandexDisk(ya_token)
+    ya.upload_link_to_disk('VK_photo/тест', 'https://sun1.beeline-sochi.userapi.com/impg/q1HWI-b0fCBwT56X5rblwA8i-Rwko9W2FoQXYQ/FRvwFikDLQ4.jpg?size=960x1280&quality=95&sign=523121db7b994b313844595ed8ed618a&type=album')
+
+
+
