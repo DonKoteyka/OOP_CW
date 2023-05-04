@@ -30,11 +30,11 @@ class YandexDisk:
         response.raise_for_status()
         if response.status_code == 201:
             print("Success")
-    def upload_link_to_disk(self, file_name, link):
+    def upload_link_to_disk(self, file_name, link, directory = 'VK_photo/'):
         upload_url = "https://cloud-api.yandex.net/v1/disk/resources/upload"
         headers = self.get_headers()
         params = {
-            'path':file_name,
+            'path':f'{directory}{file_name}',
             'url':link
         }
         response = requests.post(url = upload_url,headers = headers, params = params)

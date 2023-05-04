@@ -4,6 +4,7 @@ import os.path
 import time
 from pprint import pprint
 
+
 class Vk_pars:
     url = 'https://api.vk.com/method/'
     def __init__(self, token):
@@ -19,6 +20,7 @@ class Vk_pars:
                 'owner_id' : vk_id,
                 'access_token':self.token,
                 'offset':offset,
+                'extended':'1',
                 'v':'5.131'
             }
             res = requests.get(url_get_photo, params=param).json()
@@ -27,7 +29,33 @@ class Vk_pars:
             res_total += res['response']['items']
             offset += 20
             time.sleep(0.33)
+
         return res_total
+    def get_photo_link_lim(self, vk_id, lim = 5):
+        url_get_photo = self.url + 'photos.getAll'
+        res_total = list()
+        offset = int()
+        cut_list = (lim+20)%20
+        while offset <= lim:
+            param = {
+                'owner_id' : vk_id,
+                'access_token':self.token,
+                'offset':offset,
+                'extended': '1',
+                'v':'5.131'
+            }
+            res = requests.get(url_get_photo, params=param).json()
+            if offset <= lim - 20:
+                res_total += res['response']['items']
+            elif offset > lim - 20:
+                res_total += res['response']['items'][0 : cut_list]
+            offset += 20
+            time.sleep(0.33)
+
+        return res_total
+
+
+
     def get_dict_img(self, vk_id):
         vk_dic = self.get_photo_link(vk_id)
         j_list = list()
@@ -35,12 +63,18 @@ class Vk_pars:
         for i in vk_dic:
             file_url = max(i['sizes'], key=lambda x: size_dict[x["type"]])
             j_dic = {
-                "file_name": i['id'],
+                "likes": i['likes']['count'],
+                "date" : i['date'],
                 "url": file_url['url'],
                 "type": file_url['type']
             }
             j_list.append(j_dic)
         return j_list
+
+    def get_list_json(self, vk_id):
+        list = self.get_dict_img(vk_id)
+
+
 
     def write_img_json(self, vk_id,  json_name = 'photo_vk.json'):
         dict_img = self.get_dict_img(vk_id)
@@ -73,8 +107,8 @@ if __name__ == '__main__':
     vk = Vk_pars(vk_token)
     vk_id = '10505481'
     # # res = vk.get_dict_img(vk_id)
-    res = vk.get_photo_link(vk_id)
-    # res = vk.write_img_json(vk_id)
+    res = vk.get_photo_link_lim(vk_id)
+    vk.write_img_json(vk_id)
     # res = vk.write_photo_img(vk_id)
     # vk.get_photo_img(vk_id)
     # print(pd.DataFrame(res))
