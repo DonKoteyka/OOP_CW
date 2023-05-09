@@ -83,7 +83,7 @@ class Vk_Photo:
                 json.dump(dict_img, f)
 
 
-    def write_photo_img(self, vk_id, dir = os.getcwd()+'photo'):
+    def write_photo_img(self, vk_id, dir = os.getcwd()+'/photo'):
         dict_img = self.get_dict_img(vk_id)
         if os.path.exists(f'{dir}/'):
             for i in dict_img:
@@ -108,26 +108,11 @@ class Vk_Avatar(Vk_Photo):
             'photo_sizes': '1',
             'v': '5.131'
         }
-        res = requests.get(url_get_av, params=param).json()
+        res = requests.get(url_get_av, params=param).json()['response']['items']
         return res
 
 
 
-if __name__ == '__main__':
-    with open('private/token.txt', 'rt', encoding='utf-8') as f:
-        ya_token = f.readline()
-        vk_token = f.readline()
-
-    vk = Vk_Avatar(vk_token)
-    vk_id = '10505481'
-    res = vk.get_photo_link_lim(vk_id)
-    # res = vk.write_img_json(vk_id)
-    # vk.write_img_json(vk_id)
-    # res = vk.write_photo_img(vk_id)
-    # vk.get_photo_img(vk_id)
-    # print(pd.DataFrame(res))
-    pprint(res)
-    print(len(res))
 
 
 
