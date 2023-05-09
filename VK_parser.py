@@ -3,9 +3,10 @@ import json
 import os.path
 import time
 from pprint import pprint
+from datetime import datetime
 
 
-class Vk_pars:
+class Vk_Photo:
     url = 'https://api.vk.com/method/'
     def __init__(self, token):
         self.token = token
@@ -56,38 +57,33 @@ class Vk_pars:
 
 
 
-    def get_dict_img(self, vk_id):
-        vk_dic = self.get_photo_link(vk_id)
+    def get_dict_img(self, vk_id, lim = 5):
+        vk_dic = self.get_photo_link_lim(vk_id, lim)
         j_list = list()
         size_dict = {'s': 1, 'm': 2, 'o': 3, 'p': 4, 'q': 5, 'r': 6, 'x': 7, 'y': 8, 'z': 9, 'w': 10}
         for i in vk_dic:
             file_url = max(i['sizes'], key=lambda x: size_dict[x["type"]])
             j_dic = {
-                "likes": i['likes']['count'],
-                "date" : i['date'],
-                "url": file_url['url'],
-                "type": file_url['type']
+                'file_name': f"{i['likes']['count']}_{datetime.fromtimestamp(i['date']).strftime('%Y-%m-%d_%H-%M-%S')}",
+                'url': file_url['url'],
+                'size': file_url['type']
             }
             j_list.append(j_dic)
         return j_list
 
-    def get_list_json(self, vk_id):
-        list = self.get_dict_img(vk_id)
 
-
-
-    def write_img_json(self, vk_id,  json_name = 'photo_vk.json'):
+    def write_img_json(self, vk_id,  dir = os.getcwd() ,json_name = 'photo_vk.json'):
         dict_img = self.get_dict_img(vk_id)
         [x.pop('url') for x in dict_img]
-        if os.path.exists(f'{json_name}'):
-            with open(f'{json_name}', 'w', encoding='utf-8') as f:
+        if os.path.exists(f'{dir}/{json_name}'):
+            with open(f'{dir}/{json_name}', 'w', encoding='utf-8') as f:
                 json.dump(dict_img, f)
         else:
-            with open(f'{json_name}', 'x', encoding='utf-8') as f:
+            with open(f'{dir}/{json_name}', 'x', encoding='utf-8') as f:
                 json.dump(dict_img, f)
 
 
-    def write_photo_img(self, vk_id, dir = 'photo'):
+    def write_photo_img(self, vk_id, dir = os.getcwd()+'photo'):
         dict_img = self.get_dict_img(vk_id)
         if os.path.exists(f'{dir}/'):
             for i in dict_img:
@@ -97,6 +93,23 @@ class Vk_pars:
         else:
             return 'Укажите имя папки для сохранения фото'
 
+class Vk_Avatar(Vk_Photo):
+    def __init__(self, token):
+        self.token = token
+    def get_photo_link_lim(self, vk_id, lim = 5):
+        url_get_av = self.url + 'photos.get'
+        param = {
+            'access_token': self.token,
+            'owner_id': vk_id,
+            'album_id': 'profile',
+            'count': lim,
+            'rev': '1',
+            'extended': '1',
+            'photo_sizes': '1',
+            'v': '5.131'
+        }
+        res = requests.get(url_get_av, params=param).json()
+        return res
 
 
 
@@ -104,16 +117,17 @@ if __name__ == '__main__':
     with open('private/token.txt', 'rt', encoding='utf-8') as f:
         ya_token = f.readline()
         vk_token = f.readline()
-    vk = Vk_pars(vk_token)
+
+    vk = Vk_Avatar(vk_token)
     vk_id = '10505481'
-    # # res = vk.get_dict_img(vk_id)
     res = vk.get_photo_link_lim(vk_id)
-    vk.write_img_json(vk_id)
+    # res = vk.write_img_json(vk_id)
+    # vk.write_img_json(vk_id)
     # res = vk.write_photo_img(vk_id)
     # vk.get_photo_img(vk_id)
     # print(pd.DataFrame(res))
     pprint(res)
-    # print(len(res))
+    print(len(res))
 
 
 
