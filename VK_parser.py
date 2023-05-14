@@ -5,7 +5,9 @@ import time
 from pprint import pprint
 from datetime import datetime
 
-
+def write_json(dict, dir = os.getcwd(), json_name = 'photo_vk.json'):
+    with open(f'{dir}/{json_name}', 'w', encoding='utf-8') as f:
+        json.dump(dict, f, indent=4, sort_keys=True, ensure_ascii=False)
 class Vk_Photo:
     url = 'https://api.vk.com/method/'
     def __init__(self, token):
@@ -46,6 +48,8 @@ class Vk_Photo:
                 'v':'5.131'
             }
             res = requests.get(url_get_photo, params=param).json()
+            if res.status_code == 200:
+                print("VK Success")
             if offset <= lim - 20:
                 res_total += res['response']['items']
             elif offset > lim - 20:
@@ -75,13 +79,7 @@ class Vk_Photo:
     def write_img_json(self, vk_id,  dir = os.getcwd() ,json_name = 'photo_vk.json'):
         dict_img = self.get_dict_img(vk_id)
         [x.pop('url') for x in dict_img]
-        if os.path.exists(f'{dir}/{json_name}'):
-            with open(f'{dir}/{json_name}', 'w', encoding='utf-8') as f:
-                json.dump(dict_img, f)
-        else:
-            with open(f'{dir}/{json_name}', 'x', encoding='utf-8') as f:
-                json.dump(dict_img, f)
-
+        write_json(dict_img, dir, json_name)
 
     def write_photo_img(self, vk_id, dir = os.getcwd()+'/photo'):
         dict_img = self.get_dict_img(vk_id)
@@ -108,7 +106,10 @@ class Vk_Avatar(Vk_Photo):
             'photo_sizes': '1',
             'v': '5.131'
         }
-        res = requests.get(url_get_av, params=param).json()['response']['items']
+        respond = requests.get(url_get_av, params=param)
+        res = respond.json()['response']['items']
+        if respond.status_code == 200:
+            print("VK Success")
         return res
 
 
