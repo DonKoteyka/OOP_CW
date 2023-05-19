@@ -2,14 +2,15 @@ import requests
 import json
 import os.path
 import time
-from pprint import pprint
 from datetime import datetime
-
+import configparser
+config = configparser.ConfigParser()
+config.read('config.ini')
 def write_json(dict, dir = os.getcwd(), json_name = 'photo_vk.json'):
     with open(f'{dir}/{json_name}', 'w', encoding='utf-8') as f:
-        json.dump(dict, f, indent=4, sort_keys=True, ensure_ascii=False)
+        json.dump(dict, f, indent=config.getboolean('json','indent'), sort_keys=config.getboolean('json','sort_keys'), ensure_ascii=config.getboolean('json','ensure_ascii'))
 class Vk_Photo:
-    url = 'https://api.vk.com/method/'
+    url = config['vk']['url']
     def __init__(self, token):
         self.token = token
 
