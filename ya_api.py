@@ -17,6 +17,8 @@ class YandexDisk:
         files_url = config['ya']['files']
         headers = self.get_headers()
         response = requests.get(files_url, headers=headers)
+        if response.status_code == 200:
+            print("Yandex Success")
         return response.json()
 
     def _get_upload_link(self, disk_file_path):
@@ -24,6 +26,8 @@ class YandexDisk:
         headers = self.get_headers()
         params = {"path": disk_file_path, "overwrite": "true"}
         response = requests.get(upload_url, headers=headers, params=params)
+        if response.status_code == 200:
+            print("Yandex Success")
         return response.json()
 
     def upload_file_to_disk(self, disk_file_path, filename):
