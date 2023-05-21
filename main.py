@@ -6,23 +6,22 @@ import configparser
 config = configparser.ConfigParser()
 config.read('config.ini')
 logging.basicConfig(
-    level=logging.DEBUG,
+    level = logging.DEBUG,
     filename = config['logging']['filename'],
     format = config['logging']['format'],
-    datefmt= config['logging']['datefmt']
+    datefmt = config['logging']['datefmt']
     )
 
 logging.info(config['logging']['logging.info'])
 
 
 if __name__ == '__main__':
-    # vk_id = int(input('Введите ID:'))
-    # ya_token = input('Введите токен от яндекс диска:')
-    vk_id = '1'
+    vk_id = int(input('Введите ID:'))
+    ya = YandexDisk(input('Введите токен от яндекс диска:'))
     dir = 'Vk_photo'
     token = configparser.ConfigParser()
     token.read('private/token.ini')
-    ya = YandexDisk(token['ya']['key'])
+    # ya = YandexDisk(token['ya']['key'])
     vk = Vk_Avatar(token['vk']['key'])
     dict = vk.get_dict_img(vk_id, 5)
     vk.write_img_json(vk_id)

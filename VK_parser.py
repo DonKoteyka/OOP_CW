@@ -8,7 +8,7 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 def write_json(dict, dir = os.getcwd(), json_name = 'photo_vk.json'):
     with open(f'{dir}/{json_name}', 'w', encoding='utf-8') as f:
-        json.dump(dict, f, indent=config.getboolean('json','indent'), sort_keys=config.getboolean('json','sort_keys'), ensure_ascii=config.getboolean('json','ensure_ascii'))
+        json.dump(dict, f, indent=4, sort_keys=True, ensure_ascii=False)
 class Vk_Photo:
     url = config['vk']['url']
     def __init__(self, token):
@@ -28,6 +28,9 @@ class Vk_Photo:
                 'v':'5.131'
             }
             res = requests.get(url_get_photo, params=param).json()
+            if res.status_code == 200:
+                print("VK Success")
+            res = requests.get(url_get_photo, params=param)
             if len(res['response']['items']) < 20:
                 swicher = False
             res_total += res['response']['items']
